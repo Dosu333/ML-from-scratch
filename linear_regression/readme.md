@@ -215,11 +215,3 @@ This shows that the model successfully learned parameters close to the true valu
 ```bash
 pip install numpy matplotlib seaborn
 ```
-
----
-
-## 📚 References
-
-* *Hands-On Machine Learning with Scikit-Learn, Keras & TensorFlow* by Aurélien Géron
-* Andrew Ng’s *Machine Learning* (Coursera)
-

@@ -230,7 +230,7 @@ plt.show()
 ## 📦 Dependencies
 
 ```bash
-pip install numpy seaborn matplotlib pandas
+pip install numpy seaborn matplotlib
 ```
 
 ---
