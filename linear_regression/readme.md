@@ -1,6 +1,6 @@
 # 📘 Linear Regression with Gradient Descent (with L2 Regularization)
 
-This project demonstrates how to implement **Linear Regression** from scratch using **Gradient Descent** optimization and includes support for **L2 Regularization** (Ridge Regression). It also visualizes the training process and evaluates model performance.
+This project implements **Linear Regression** from scratch using **Gradient Descent**, with optional **L2 Regularization** (Ridge Regression). It also visualizes the training process and evaluates model performance.
 
 ---
 
@@ -8,98 +8,90 @@ This project demonstrates how to implement **Linear Regression** from scratch us
 
 ### 1. Linear Regression Model
 
-Linear regression assumes a linear relationship between input features ( X \in \mathbb{R}^{m \times n} ) and output variable ( y \in \mathbb{R}^m ).
+We model the relationship between input features `X` and target `y` as a linear combination of weights and bias:
 
-The hypothesis function is given by:
-
-[
-\hat{y}^{(i)} = w^T x^{(i)} + b
-]
+```
+ŷ = wᵀx + b
+```
 
 Where:
 
-* ( \hat{y}^{(i)} ) is the predicted output for sample ( i )
-* ( w \in \mathbb{R}^n ) is the weight vector
-* ( b \in \mathbb{R} ) is the bias (intercept)
-* ( x^{(i)} \in \mathbb{R}^n ) is the feature vector for the ( i^{th} ) sample
+* ŷ = predicted value
+* w = weights vector
+* b = bias (intercept)
+* x = feature vector for one training example
 
 ---
 
 ### 2. Cost Function (Mean Squared Error)
 
-To measure model performance, the **Mean Squared Error (MSE)** cost function is used:
+The Mean Squared Error (MSE) measures how well predictions match actual values:
 
-[
-J(w, b) = \frac{1}{2m} \sum_{i=1}^{m} (\hat{y}^{(i)} - y^{(i)})^2
-]
+```
+J(w, b) = (1 / (2m)) * Σ(ŷᵢ - yᵢ)²
+```
 
-where:
+Where:
 
-* ( m ) = number of training examples
-* ( y^{(i)} ) = true label for sample ( i )
+* m = number of training examples
+* yᵢ = actual target
+* ŷᵢ = predicted value for sample i
 
 ---
 
 ### 3. L2 Regularization (Ridge Regression)
 
-To prevent overfitting and penalize large weight magnitudes, we add an **L2 regularization** term:
+To penalize large weight values and reduce overfitting, a regularization term is added:
 
-[
-J_{reg}(w, b) = \frac{1}{2m} \sum_{i=1}^{m} (\hat{y}^{(i)} - y^{(i)})^2 + \frac{\lambda}{2m} \sum_{j=1}^{n} w_j^2
-]
+```
+J_reg(w, b) = (1 / (2m)) * Σ(ŷᵢ - yᵢ)² + (λ / (2m)) * Σwⱼ²
+```
 
-where:
+Where:
 
-* ( \lambda ) = regularization parameter controlling penalty strength
-* Larger ( \lambda ) ⇒ stronger regularization ⇒ smaller weights (but possibly higher bias)
+* λ (lambda) = regularization strength
+* Larger λ → stronger penalty → smaller weights
 
 ---
 
 ### 4. Gradient Descent Optimization
 
-We minimize the cost function ( J_{reg}(w, b) ) iteratively using **Gradient Descent**.
+To minimize the cost function, we iteratively update parameters using gradients:
 
-The parameter update rules are derived from the partial derivatives:
+```
+∂J/∂wⱼ = (1/m) * Σ((ŷᵢ - yᵢ) * xⱼᵢ) + (λ/m) * wⱼ
+∂J/∂b  = (1/m) * Σ(ŷᵢ - yᵢ)
+```
 
-[
-\frac{\partial J}{\partial w_j} = \frac{1}{m} \sum_{i=1}^{m} \big( (\hat{y}^{(i)} - y^{(i)})x_j^{(i)} \big) + \frac{\lambda}{m}w_j
-]
+Update rules:
 
-[
-\frac{\partial J}{\partial b} = \frac{1}{m} \sum_{i=1}^{m} (\hat{y}^{(i)} - y^{(i)})
-]
+```
+wⱼ := wⱼ - α * (∂J/∂wⱼ)
+b  := b  - α * (∂J/∂b)
+```
 
-Hence, updates become:
+Where:
 
-[
-w_j := w_j - \alpha \frac{\partial J}{\partial w_j}
-]
-[
-b := b - \alpha \frac{\partial J}{\partial b}
-]
-
-where ( \alpha ) is the **learning rate** controlling the step size in gradient descent.
+* α (alpha) = learning rate controlling step size
 
 ---
 
 ### 5. Convergence Criterion
 
-Training stops when the **absolute change in cost** between iterations is smaller than a threshold ( \epsilon ):
+Training stops when the change in cost between iterations is smaller than a threshold ε (epsilon):
 
-[
-|J_{t} - J_{t-1}| \leq \epsilon
-]
-
-This ensures that the optimization terminates once the model converges.
+```
+|J(t) - J(t-1)| ≤ ε
+```
 
 ---
 
 ## ⚙️ Implementation Details
 
-The code consists of two main parts:
+The project includes both:
 
-1. **Procedural Implementation** (for intuition)
-2. **Object-Oriented Implementation** via the `LinearRegression` class
+1. A **procedural** implementation for intuition
+2. An **object-oriented** version (`LinearRegression` class)
 
 ### Key Parameters
 
@@ -108,7 +100,7 @@ The code consists of two main parts:
 | `learning_rate` | Step size for gradient descent updates | 0.001     |
 | `epsilon`       | Convergence threshold                  | 1e-6      |
 | `_lambda`       | Regularization parameter               | 0         |
-| `max_iter`      | Maximum number of training iterations  | 1,000,000 |
+| `max_iter`      | Maximum number of iterations           | 1,000,000 |
 
 ---
 
@@ -121,26 +113,21 @@ class LinearRegression:
 
 ### Methods
 
-#### 1. `fit(X, y)`
+#### `fit(X, y)`
 
-Trains the model using gradient descent.
-
-Steps:
+Trains the model using batch gradient descent:
 
 1. Initialize weights and bias to zero.
-2. Compute predictions:
-   [
-   \hat{y} = Xw + b
-   ]
+2. Compute predictions: ŷ = Xw + b
 3. Compute cost using `_cost_function`.
-4. Compute gradients for `w` and `b`.
-5. Update parameters iteratively until convergence.
+4. Compute gradients for w and b.
+5. Update parameters iteratively until convergence or max iterations.
 
-#### 2. `_cost_function(X, y, w, b)`
+#### `_cost_function(X, y, w, b)`
 
-Computes the mean squared error (and regularization term if `_lambda` > 0).
+Computes the mean squared error with optional regularization.
 
-#### 3. `predict(X)`
+#### `predict(X)`
 
 Generates predictions using the learned weights and bias.
 
@@ -148,23 +135,18 @@ Generates predictions using the learned weights and bias.
 
 ## 📊 Visualizations
 
-Two plots are generated:
+Two key plots help track model performance:
 
-1. **Cost Function History**
-
-   * Shows how the cost decreases over iterations.
-   * Helps visualize convergence behavior.
-
-2. **Regression Line Fit**
-
-   * Plots data points and fitted line (for 1D case).
-   * Demonstrates the quality of the fit.
+1. **Cost Function History** — shows how the cost decreases over iterations.
+2. **Regression Line Fit** — displays the data points and regression line (for 1D case).
 
 ---
 
 ## 🧩 Example Usage
 
 ```python
+import numpy as np
+
 np.random.seed(42)
 X = np.random.rand(100, 2)
 true_w = np.array([2, -3])
@@ -186,17 +168,12 @@ print("RMSE:", np.sqrt(mse))
 
 ## 🧾 Evaluation Metrics
 
-The **Mean Squared Error (MSE)** is used to measure performance:
+We use **Mean Squared Error (MSE)** and **Root Mean Squared Error (RMSE)** to evaluate model performance:
 
-[
-MSE = \frac{1}{m}\sum_{i=1}^{m}(\hat{y}^{(i)} - y^{(i)})^2
-]
-
-and the **Root Mean Squared Error (RMSE)** provides an interpretable error in the same unit as ( y ):
-
-[
-RMSE = \sqrt{MSE}
-]
+```
+MSE  = (1/m) * Σ(ŷᵢ - yᵢ)²
+RMSE = sqrt(MSE)
+```
 
 ---
 
@@ -209,27 +186,27 @@ MSE: 0.035
 RMSE: 0.187
 ```
 
-This demonstrates that the model successfully recovered the true underlying parameters (( w = [2, -3], b = 5 )).
+This shows that the model successfully learned parameters close to the true values (w = [2, -3], b = 5).
 
 ---
 
 ## 🧩 Notes
 
-* The algorithm is **batch gradient descent**, i.e., it uses all data in each update.
-* You can extend this to **stochastic** or **mini-batch** versions for large datasets.
-* Regularization can be turned off by setting `_lambda = 0`.
+* The algorithm uses **batch gradient descent** (all samples per update).
+* You can extend it to **stochastic** or **mini-batch** versions for large datasets.
+* Regularization can be disabled by setting `_lambda = 0`.
 
 ---
 
 ## 🧠 Summary
 
-| Concept                | Formula / Description                                                                                            |
-| ---------------------- | ---------------------------------------------------------------------------------------------------------------- |
-| Hypothesis             | ( \hat{y} = Xw + b )                                                                                             |
-| Cost Function          | ( J = \frac{1}{2m}\sum(\hat{y}-y)^2 + \frac{\lambda}{2m}\sum w^2 )                                               |
-| Gradient w.r.t weights | ( \frac{1}{m}\sum((\hat{y}-y)X) + \frac{\lambda}{m}w )                                                           |
-| Gradient w.r.t bias    | ( \frac{1}{m}\sum(\hat{y}-y) )                                                                                   |
-| Update Rule            | ( w := w - \alpha \cdot \frac{\partial J}{\partial w} ), ( b := b - \alpha \cdot \frac{\partial J}{\partial b} ) |
+| Concept       | Description                               |
+| ------------- | ----------------------------------------- |
+| Hypothesis    | ŷ = Xw + b                                |
+| Cost Function | J = (1 / 2m) * Σ(ŷ - y)² + (λ / 2m) * Σw² |
+| Gradient (w)  | (1/m) * Σ((ŷ - y)X) + (λ/m) * w           |
+| Gradient (b)  | (1/m) * Σ(ŷ - y)                          |
+| Update Rule   | w := w - α * ∂J/∂w; b := b - α * ∂J/∂b    |
 
 ---
 
