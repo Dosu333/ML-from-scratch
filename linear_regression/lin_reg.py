@@ -2,10 +2,13 @@ import numpy as np
 
 
 class LinearRegression:
-    def __init__(self, learning_rate=0.01, epsilon=1e-6):
+    def __init__(self, learning_rate=0.001,
+                 epsilon=1e-6, _lambda=0, max_iter=1000000):
         self.learning_rate = learning_rate
         self.epsilon = epsilon
-        self.w = 0
+        self._lambda = _lambda
+        self.max_iter = max_iter
+        self.w = None
         self.b = 0
 
     def _cost_function(self, X, y, w, b):
@@ -15,18 +18,30 @@ class LinearRegression:
         return cost
 
     def fit(self, X, y):
+        self.w = np.zeros(X.shape[1])
+        y = y.ravel()
         prev_cost = None
         new_cost = None
 
-        while prev_cost is None or abs(new_cost - prev_cost) > self.epsilon:
-            m = len(y)
-            predictions = X.dot(self.w) + self.b
+        for _ in range(self.max_iter):
             prev_cost = new_cost
             new_cost = self._cost_function(X, y, self.w, self.b)
-            d_dw = (1 / m) * np.sum((predictions - y) * X)
-            d_db = (1 / m) * np.sum(predictions - y)
-            self.w = self.w - (self.learning_rate * d_dw)
-            self.b = self.b - (self.learning_rate * d_db)
+            cost_change = abs(new_cost - prev_cost)
+
+            if prev_cost is not None and cost_change <= self.epsilon:
+                break
+
+            m = len(y)
+            predictions = X.dot(self.w) + self.b
+            error = predictions - y
+
+            for j in range(X.shape[1]):
+                d_dw = (1 / m) * np.sum(error * X[:, j]) + (
+                    (self._lambda / m) * self.w[j]
+                )
+                self.w[j] -= self.learning_rate * d_dw
+            d_db = 1 / m * np.sum(error)
+            self.b -= self.learning_rate * d_db
 
     def predict(self, X):
         predictions = X.dot(self.w) + self.b
