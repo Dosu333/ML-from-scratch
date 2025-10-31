@@ -2,8 +2,8 @@ import numpy as np
 
 
 class LinearRegression:
-    def __init__(self, learning_rate=0.001,
-                 epsilon=1e-6, _lambda=0, max_iter=1000000):
+    def __init__(self, learning_rate=0.001, epsilon=1e-6,
+                 _lambda=0, max_iter=1000000):
         self.learning_rate = learning_rate
         self.epsilon = epsilon
         self._lambda = _lambda
@@ -26,9 +26,9 @@ class LinearRegression:
         for _ in range(self.max_iter):
             prev_cost = new_cost
             new_cost = self._cost_function(X, y, self.w, self.b)
-            cost_change = abs(new_cost - prev_cost)
 
-            if prev_cost is not None and cost_change <= self.epsilon:
+            if (prev_cost is not None and
+                    abs(new_cost - prev_cost) <= self.epsilon):
                 break
 
             m = len(y)
